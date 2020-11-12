@@ -124,11 +124,11 @@ def connectedComponents(analyzer):
     """
     Numero de componentes fuertemente conectados
     """
-    return model.connectedComponents(analyzer)
+    return model.numSCC(analyzer)
 
 
-def connectedwithID(analyzer, id1,id2):
-    return model.connectedwithID(analyzer, id1,id2)
+def connectedwithID(cont, id1,id2):
+    return model.connectedwithID(cont, id1,id2)
 
 def minimumCostPaths(analyzer, initialStation):
     """

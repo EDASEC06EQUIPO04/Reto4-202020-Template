@@ -76,7 +76,7 @@ def printMenu():
 
 
 def optionTwo():
-    print("\nCargando información de transporte de singapur ....")
+    print("\nCargando información ....")
     controller.loadServices(cont)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
@@ -88,17 +88,13 @@ def optionTwo():
 
 
 def optionThree():
-    print('El número de componentes conectados es: ' +
-          str(controller.connectedComponents(cont)))
-    id1=input("inserte ID1\n")
-    id2=input("inserte ID2\n")
-
-
+    print('El número de componentes conectados es: ' + str(controller.connectedComponents(cont)))
+    id1=int(input("inserte ID1\n"))
+    id2=int(input("inserte ID2\n"))
     #TESTED WITH 
-    #144
-    #195
+    #146
+    #168
     #controller.connectedwithID(cont,id1,id2)
-
 
 
 
