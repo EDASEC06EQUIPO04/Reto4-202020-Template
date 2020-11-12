@@ -58,17 +58,20 @@ servicefile4 = '201801-4-citibike-tripdata.csv'
 
 def printMenu():
     print("\n")
-    print("*******************************************")
-    print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar información de buses de singapur")
-    print("3- Calcular componentes conectados")
-    print("4- Establecer estación base:")
-    print("5- Hay camino entre estacion base y estación: ")
-    print("6- Ruta de costo mínimo desde la estación base y estación: ")
-    print("7- Estación que sirve a mas rutas: ")
-    print("0- Salir")
-    print("*******************************************")
+    print("****************************************************")
+    print("RETO No. 4 CitiBike")
+    print("[ 1 ] Inicializar Analizador")
+    print("[ 2 ] Cargar información de citibyke en newyork")
+    print("[ 3 ] Cantidad de clusters de viajes")
+    print("[ 4 ] Ruta turistica circular")
+    print("[ 5 ] Estaciones criticas ")
+    print("[ 6 ] Ruta turistisca por resistencia")
+    print("[ 7 ] Recomendador de Rutas")
+    print("[ 8 ] Ruta de interes turistico")
+    print("[ 9 ] Identificacion de estaciones para publicidad")
+    print("[10 ] Identificacion de bicicletas para mantenimiento")
+    print("[ 0 ] Salir")
+    print("****************************************************")
 
 
 def optionTwo():
