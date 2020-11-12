@@ -96,28 +96,24 @@ def optionFour():
 
 
 def optionFive():
-    haspath = controller.hasPath(cont, destStation)
-    print('Hay camino entre la estación base : ' +
-          'y la estación: ' + destStation + ': ')
-    print(haspath)
-
+    pass
 
 def optionSix():
-    path = controller.minimumCostPath(cont, destStation)
-    if path is not None:
-        pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
-        while (not stack.isEmpty(path)):
-            stop = stack.pop(path)
-            print(stop)
-    else:
-        print('No hay camino')
+    pass
 
 
 def optionSeven():
-    maxvert, maxdeg = controller.servedRoutes(cont)
-    print('Estación: ' + maxvert + '  Total rutas servidas: '
-          + str(maxdeg))
+    pass
+
+def optionEight():
+    pass
+
+def optionNine():
+    pass
+
+def optionTen():
+    pass
+
 
 
 """
@@ -158,6 +154,18 @@ while True:
 
     elif int(inputs[0]) == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    
+    elif int(inputs[0]) == 8:
+        executiontime = timeit.timeit(optionEight, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    
+    elif int(inputs[0]) == 9:
+        executiontime = timeit.timeit(optionNine, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    
+    elif int(inputs[0]) == 10:
+        executiontime = timeit.timeit(optionTen, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     else:
