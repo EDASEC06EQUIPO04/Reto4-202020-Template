@@ -28,6 +28,7 @@ import config as cf
 from App import model
 import csv
 import os
+from DISClib.Algorithms.Graphs import scc
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -125,6 +126,9 @@ def connectedComponents(analyzer):
     """
     return model.connectedComponents(analyzer)
 
+
+def connectedwithID(analyzer, id1,id2):
+    return model.connectedwithID(analyzer, id1,id2)
 
 def minimumCostPaths(analyzer, initialStation):
     """

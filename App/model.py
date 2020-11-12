@@ -31,8 +31,8 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from DISClib.DataStructures import edge as e
 assert config
-
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -160,6 +160,12 @@ def addConnection(analyzer, origin, destination, distance):
     edge = gr.getEdge(analyzer['connections'], origin, destination)
     if edge is None:
         gr.addEdge(analyzer['connections'], origin, destination, distance)
+    else: #actualizacion del peso de los arcos
+        e.updateAverageWeight (edge,distance)
+    
+    #else:
+    #    gr.updateAverageWeight (edge, distance)   
+    #    print ("Arco update " + str(origin) + "-->" + str(destination) + "count: " + str(edge['count']))
     return analyzer
 
 # ==============================
@@ -173,7 +179,27 @@ def connectedComponents(analyzer):
     Se utiliza el algoritmo de Kosaraju
     """
     analyzer['components'] = scc.KosarajuSCC(analyzer['connections'])
+
+    
     return scc.connectedComponents(analyzer['components'])
+
+
+#def connectedwithID(analyzer, id1,id2):
+#    analyzer['components'] = scc.KosarajuSCC(analyzer['connections'])
+# #    return scc.stronglyConnected(analyzer['components'], id1, id2)
+
+
+
+
+def numSCC(analyzer):
+    sc = scc.KosarajuSCC(analyzer['connections'])
+    return scc.connectedComponents(sc)
+
+def connectedwithID(analyzer, id1,id2):
+    sc = scc.KosarajuSCC(analyzer['connections'])
+    return scc.stronglyConnected(sc, id1, id2)
+
+
 
 
 def minimumCostPaths(analyzer, initialStation):

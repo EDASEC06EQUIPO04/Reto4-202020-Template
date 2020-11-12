@@ -291,3 +291,22 @@ def adjacentEdges(graph, vertex):
     """
     if (graph['type'] == "ADJ_LIST"):
         return alt.adjacentEdges(graph, vertex)
+
+def newEdge(va, vb, weight=0):
+    """
+    Crea un nuevo arco entrelos vertices va y vb
+    """
+    edge = {'vertexA': va,
+            'vertexB': vb,
+            'weight': weight,
+            'count': 1
+            }
+    return edge
+
+def updateAverageWeight(edge, weight):
+    """
+    Crea un nuevo arco entrelos vertices va y vb
+    """
+    newweight = (edge['weight']*edge['count']+weight)/(edge['count']+1)
+    edge['weight']= newweight
+    edge['count']+=1

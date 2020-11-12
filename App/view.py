@@ -31,6 +31,7 @@ from App import controller
 from DISClib.ADT import stack
 import timeit
 assert config
+from DISClib.Algorithms.Graphs import scc
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -48,8 +49,8 @@ initialStation = None
 recursionLimit = 20000
 servicefile = '201801-1-citibike-tripdata.csv'
 servicefile2 = '201801-2-citibike-tripdata.csv'
-servicefile3 = '201801-3-citibike-tripdata.csv'
-servicefile4 = '201801-4-citibike-tripdata.csv'
+#servicefile3 = '201801-3-citibike-tripdata.csv'
+#servicefile4 = '201801-4-citibike-tripdata.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -89,6 +90,16 @@ def optionTwo():
 def optionThree():
     print('El número de componentes conectados es: ' +
           str(controller.connectedComponents(cont)))
+    id1=input("inserte ID1\n")
+    id2=input("inserte ID2\n")
+
+
+    #TESTED WITH 
+    #144
+    #195
+    #controller.connectedwithID(cont,id1,id2)
+
+
 
 
 def optionFour():
