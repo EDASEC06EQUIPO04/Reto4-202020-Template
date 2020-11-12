@@ -42,7 +42,6 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # -----------------------------------------------------
 
-# Funciones para agregar informacion al grafo
 
 def newAnalyzer():
     """ Inicializa el analizador
@@ -54,25 +53,27 @@ def newAnalyzer():
            vertice determinado a todos los otros vértices del grafo
     """
     try:
-        citibike = {
-                    'station': None,
-                    'graph': None,
+        analyzer = {
+                    'stops': None,
+                    'connections': None,
                     'components': None,
                     'paths': None
                     }
 
-        citibike['station'] = m.newMap(numelements=1000,
+        analyzer['stops'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
-                                     comparefunction=compareStationIds)
+                                     comparefunction=compareStopIds)
 
-        citibike['graph'] = gr.newGraph(datastructure='ADJ_LIST',
+        analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
-                                              size=1000,
-                                              comparefunction=compareStationIds)
-        return citibike
+                                              size=14000,
+                                              comparefunction=compareStopIds)
+        return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
+
+# Funciones para agregar informacion al grafo
 
 def addStopConnection(analyzer, lastservice, service):
     """
@@ -90,22 +91,15 @@ def addStopConnection(analyzer, lastservice, service):
         origin = formatVertex(lastservice)
         destination = formatVertex(service)
         cleanServiceDistance(lastservice, service)
-        #distance = float(service['Distance']) - float(lastservice['Distance'])
-        distance = float(service['tripduration'])
+        distance = float(service['tripduration']) - float(lastservice['tripduration'])
         addStop(analyzer, origin)
         addStop(analyzer, destination)
-        
-        # La siguiente linea es para adiciona la conneccion
-        
-        #addConnection(analyzer, origin, destination, distance) 
-        
-        #me funciono en algun momento pero sigo con fallo
-        #addRouteStop(analyzer, service)
-        #addRouteStop(analyzer, lastservice)
+        addConnection(analyzer, origin, destination, distance)
+        addRouteStop(analyzer, service)
+        addRouteStop(analyzer, lastservice)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
-
 
 
 def addStop(analyzer, stopid):
@@ -113,8 +107,8 @@ def addStop(analyzer, stopid):
     Adiciona una estación como un vertice del grafo
     """
     try:
-        if not gr.containsVertex(analyzer['graph'], stopid):
-            gr.insertVertex(analyzer['graph'], stopid)
+        if not gr.containsVertex(analyzer['connections'], stopid):
+            gr.insertVertex(analyzer['connections'], stopid)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addstop')
@@ -124,11 +118,11 @@ def addRouteStop(analyzer, service):
     """
     Agrega a una estacion, una ruta que es servida en ese paradero
     """
-    entry = m.get(analyzer['station'], service['bikeid'])
+    entry = m.get(analyzer['stops'], service['end station id'])
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
         lt.addLast(lstroutes, service['start station id'])
-        m.put(analyzer['station'], service['bikeid'], lstroutes)
+        m.put(analyzer['stops'], service['end station id'], lstroutes)
     else:
         lstroutes = entry['value']
         info = service['start station id']
@@ -144,11 +138,11 @@ def addRouteConnections(analyzer):
     arcos entre ellas para representar el cambio de ruta
     que se puede realizar en una estación.
     """
-    lststops = m.keySet(analyzer['station'])
+    lststops = m.keySet(analyzer['stops'])
     stopsiterator = it.newIterator(lststops)
     while it.hasNext(stopsiterator):
         key = it.next(stopsiterator)
-        lstroutes = m.get(analyzer['station'], key)['value']
+        lstroutes = m.get(analyzer['stops'], key)['value']
         prevrout = None
         routeiterator = it.newIterator(lstroutes)
         while it.hasNext(routeiterator):
@@ -163,27 +157,95 @@ def addConnection(analyzer, origin, destination, distance):
     """
     Adiciona un arco entre dos estaciones
     """
-    edge = gr.getEdge(analyzer['graph'], origin, destination)
+    edge = gr.getEdge(analyzer['connections'], origin, destination)
     if edge is None:
-        gr.addEdge(analyzer['graph'], origin, destination, distance)
-    else:
-        gr.updateAverageWeight (edge, distance)   
-        print ("Arco update " + str(origin) + "-->" + str(destination) + "count: " + str(edge['count']))
+        gr.addEdge(analyzer['connections'], origin, destination, distance)
     return analyzer
 
 # ==============================
 # Funciones de consulta
 # ==============================
 
+
+def connectedComponents(analyzer):
+    """
+    Calcula los componentes conectados del grafo
+    Se utiliza el algoritmo de Kosaraju
+    """
+    analyzer['components'] = scc.KosarajuSCC(analyzer['connections'])
+    return scc.connectedComponents(analyzer['components'])
+
+
+def minimumCostPaths(analyzer, initialStation):
+    """
+    Calcula los caminos de costo mínimo desde la estacion initialStation
+    a todos los demas vertices del grafo
+    """
+    analyzer['paths'] = djk.Dijkstra(analyzer['connections'], initialStation)
+    return analyzer
+
+
+def hasPath(analyzer, destStation):
+    """
+    Indica si existe un camino desde la estacion inicial a la estación destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    return djk.hasPathTo(analyzer['paths'], destStation)
+
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo entre la estacion de inicio
+    y la estacion destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    path = djk.pathTo(analyzer['paths'], destStation)
+    return path
+
+
+def totalStops(analyzer):
+    """
+    Retorna el total de estaciones (vertices) del grafo
+    """
+    return gr.numVertices(analyzer['connections'])
+
+
+def totalConnections(analyzer):
+    """
+    Retorna el total arcos del grafo
+    """
+    return gr.numEdges(analyzer['connections'])
+
+
+def servedRoutes(analyzer):
+    """
+    Retorna la estación que sirve a mas rutas.
+    Si existen varias rutas con el mismo numero se
+    retorna una de ellas
+    """
+    lstvert = m.keySet(analyzer['stops'])
+    itlstvert = it.newIterator(lstvert)
+    maxvert = None
+    maxdeg = 0
+    while(it.hasNext(itlstvert)):
+        vert = it.next(itlstvert)
+        lstroutes = m.get(analyzer['stops'], vert)['value']
+        degree = lt.size(lstroutes)
+        if(degree > maxdeg):
+            maxvert = vert
+            maxdeg = degree
+    return maxvert, maxdeg
+
+
 # ==============================
 # Funciones Helper
 # ==============================
+
 def cleanServiceDistance(lastservice, service):
     """
     En caso de que el archivo tenga un espacio en la
     distancia, se reemplaza con cero.
     """
-    
     if service['tripduration'] == '':
         service['tripduration'] = 0
     if lastservice['tripduration'] == '':
@@ -196,40 +258,23 @@ def formatVertex(service):
     seguido de la ruta.
     """
     name = service['end station id'] + '-'
-    name = name + service['bikeid']
+    name = name + service['start station id']
     return name
+
 
 # ==============================
 # Funciones de Comparacion
 # ==============================
 
-def connectedComponents(analyzer):
-    """
-    Calcula los componentes conectados del grafo
-    Se utiliza el algoritmo de Kosaraju
-    """
-    analyzer['components'] = scc.KosarajuSCC(analyzer['graph'])
-    return scc.connectedComponents(analyzer['components'])
 
-
-def minimumCostPaths(analyzer, initialStation):
-    """
-    Calcula los caminos de costo mínimo desde la estacion initialStation
-    a todos los demas vertices del grafo
-    """
-    analyzer['paths'] = djk.Dijkstra(analyzer['graph'], initialStation)
-    return analyzer
-
-
-
-def compareStationIds(station, keyvaluestation):
+def compareStopIds(stop, keyvaluestop):
     """
     Compara dos estaciones
     """
-    stationcode = keyvaluestation['key']
-    if (station == stationcode):
+    stopcode = keyvaluestop['key']
+    if (stop == stopcode):
         return 0
-    elif (station > stationcode):
+    elif (stop > stopcode):
         return 1
     else:
         return -1
@@ -245,16 +290,3 @@ def compareroutes(route1, route2):
         return 1
     else:
         return -1
-
-
-def totalConnections(analyzer):
-    """
-    Retorna el total arcos del grafo
-    """
-    return gr.numEdges(analyzer['graph'])
-
-def totalStops(analyzer):
-    """
-    Retorna el total de estaciones (vertices) del grafo
-    """
-    return gr.numVertices(analyzer['graph'])

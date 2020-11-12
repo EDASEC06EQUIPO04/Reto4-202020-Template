@@ -29,7 +29,6 @@ import sys
 import config
 from App import controller
 from DISClib.ADT import stack
-from DISClib.Algorithms.Graphs import scc
 import timeit
 assert config
 
@@ -40,12 +39,17 @@ hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
 
-servicefile = '201801-1-citibike-tripdata.csv'
-servicefile2= '201801-2-citibike-tripdata.csv'
-servicefile3= '201801-3-citibike-tripdata.csv'
-servicefile4= '201801-4-citibike-tripdata.csv'
+# ___________________________________________________
+#  Variables
+# ___________________________________________________
+
+
 initialStation = None
 recursionLimit = 20000
+servicefile = '201801-1-citibike-tripdata.csv'
+servicefile2 = '201801-2-citibike-tripdata.csv'
+servicefile3 = '201801-3-citibike-tripdata.csv'
+servicefile4 = '201801-4-citibike-tripdata.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -54,27 +58,24 @@ recursionLimit = 20000
 
 def printMenu():
     print("\n")
-    print("****************************************************")
-    print("RETO No. 4 CitiBike")
-    print("[ 1 ] Inicializar Analizador")
-    print("[ 2 ] Cargar información de citibyke en newyork")
-    print("[ 3 ] Cantidad de clusters de viajes")
-    print("[ 4 ] Ruta turistica circular")
-    print("[ 5 ] Estaciones criticas ")
-    print("[ 6 ] Ruta turistisca por resistencia")
-    print("[ 7 ] Recomendador de Rutas")
-    print("[ 8 ] Ruta de interes turistico")
-    print("[ 9 ] Identificacion de estaciones para publicidad")
-    print("[10 ] Identificacion de bicicletas para mantenimiento")
-    print("[ 0 ] Salir")
-    print("****************************************************")
+    print("*******************************************")
+    print("Bienvenido")
+    print("1- Inicializar Analizador")
+    print("2- Cargar información de buses de singapur")
+    print("3- Calcular componentes conectados")
+    print("4- Establecer estación base:")
+    print("5- Hay camino entre estacion base y estación: ")
+    print("6- Ruta de costo mínimo desde la estación base y estación: ")
+    print("7- Estación que sirve a mas rutas: ")
+    print("0- Salir")
+    print("*******************************************")
 
 
 def optionTwo():
-    print("\nCargando información ....")
+    print("\nCargando información de transporte de singapur ....")
     controller.loadServices(cont, servicefile4)
-    numedges = controller.totalConnections(cont) #falta implementar esto
-    numvertex = controller.totalStops(cont) #falta implementar esto
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStops(cont)
     print('Numero de vertices: ' + str(numvertex))
     print('Numero de arcos: ' + str(numedges))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
@@ -83,28 +84,38 @@ def optionTwo():
 
 
 def optionThree():
-    print('Under construction.... ')
+    print('El número de componentes conectados es: ' +
+          str(controller.connectedComponents(cont)))
+
 
 def optionFour():
-    print('Under construction.... ')
+    controller.minimumCostPaths(cont, initialStation)
+
 
 def optionFive():
-    print('Under construction.... ')
+    haspath = controller.hasPath(cont, destStation)
+    print('Hay camino entre la estación base : ' +
+          'y la estación: ' + destStation + ': ')
+    print(haspath)
+
 
 def optionSix():
-    print('Under construction.... ')
+    path = controller.minimumCostPath(cont, destStation)
+    if path is not None:
+        pathlen = stack.size(path)
+        print('El camino es de longitud: ' + str(pathlen))
+        while (not stack.isEmpty(path)):
+            stop = stack.pop(path)
+            print(stop)
+    else:
+        print('No hay camino')
+
 
 def optionSeven():
-    print('Under construction.... ')
+    maxvert, maxdeg = controller.servedRoutes(cont)
+    print('Estación: ' + maxvert + '  Total rutas servidas: '
+          + str(maxdeg))
 
-def optionEight():
-    print('Under construction.... ')
-
-def optionNine():
-    print('Under construction.... ')
-
-def optionTen():
-    print('Under construction.... ')
 
 """
 Menu principal
@@ -113,51 +124,37 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
 
-    if int(inputs) == 1:
-        print("\nInicializando el controlador...")
+    if int(inputs[0]) == 1:
+        print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
-        citibike = controller.init()
-        cont=citibike
-        print (type(citibike['station']))
-        print (type (citibike['graph']))
-        print ("Se ha creado el Cont.... Clic para continuar")
+        cont = controller.init()
 
-
-    elif int(inputs) == 2:
+    elif int(inputs[0]) == 2:
         executiontime = timeit.timeit(optionTwo, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs) == 3:
+    elif int(inputs[0]) == 3:
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs) == 4:
+    elif int(inputs[0]) == 4:
+        msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
+        initialStation = input(msg)
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs) == 5:
+    elif int(inputs[0]) == 5:
+        destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionFive, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs) == 6:
+    elif int(inputs[0]) == 6:
+        destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs) == 7:
+    elif int(inputs[0]) == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif int(inputs) == 8:
-        executiontime = timeit.timeit(optionEight, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif int(inputs) == 9:
-        executiontime = timeit.timeit(optionNine, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-
-    elif int(inputs) == 10:
-        executiontime = timeit.timeit(optionTen, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     else:
