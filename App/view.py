@@ -76,7 +76,7 @@ def printMenu():
 
 def optionTwo():
     print("\nCargando información de transporte de singapur ....")
-    controller.loadServices(cont, servicefile4)
+    controller.loadServices(cont)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
     print('Numero de vertices: ' + str(numvertex))

@@ -27,6 +27,7 @@
 import config as cf
 from App import model
 import csv
+import os
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -56,7 +57,7 @@ def init():
 # ___________________________________________________
 
 
-def loadServices(analyzer, servicesfile):
+def loadServices(analyzer):
     """
     Carga los datos de los archivos CSV en el modelo.
     Se crea un arco entre cada par de estaciones que
@@ -65,8 +66,25 @@ def loadServices(analyzer, servicesfile):
     addRouteConnection crea conexiones entre diferentes rutas
     servidas en una misma estación.
     """
-    servicesfile = cf.data_dir + servicesfile
-    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+    #servicesfile = cf.data_dir + servicesfile
+
+    for filename in os.listdir(cf.data_dir):
+        if filename.endswith('.csv'):
+            print('Cargando archivo: ' + filename)
+            loadFile(analyzer, filename)
+
+
+    #input_file = csv.DictReader(open(servicesfile, encoding="utf-8"), delimiter=",")
+
+
+    return analyzer
+
+
+def loadFile(analyzer, tripfile):
+    """
+    """
+    tripfile = cf.data_dir + tripfile
+    input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
     lastservice = None
     for service in input_file:
@@ -78,6 +96,9 @@ def loadServices(analyzer, servicesfile):
         lastservice = service
     model.addRouteConnections(analyzer)
     return analyzer
+
+
+
 
 # ___________________________________________________
 #  Funciones para consultas
