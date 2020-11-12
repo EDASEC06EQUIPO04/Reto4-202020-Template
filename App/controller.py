@@ -40,12 +40,55 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # analyzer es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
+
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
 
-# ___________________________________________________
+def loadServices(analyzer, servicesfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un arco entre cada par de estaciones que
+    pertenecen al mismo servicio y van en el mismo sentido.
+
+    addRouteConnection crea conexiones entre diferentes rutas
+    servidas en una misma estación.
+    """
+    servicesfile = cf.data_dir + servicesfile
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+                                delimiter=",")
+    lastservice = None
+    for service in input_file:
+        if lastservice is not None:
+            sameservice = lastservice['start station id'] == service['start station id'] 
+            samedirection = lastservice['end station id'] == service['end station id'] 
+            if sameservice and samedirection:
+                model.addStopConnection(analyzer, lastservice, service) 
+        lastservice = service
+    model.addRouteConnections(analyzer) 
+    return analyzer
+
+
+
+
+
 #  Funciones para consultas
 # ___________________________________________________
+
+def totalStops(analyzer):
+
+    return model.totalStops(analyzer)
+
+
+def totalConnections(analyzer):
+
+    return model.totalConnections(analyzer)

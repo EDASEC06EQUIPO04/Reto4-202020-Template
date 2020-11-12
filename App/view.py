@@ -29,6 +29,7 @@ import sys
 import config
 from App import controller
 from DISClib.ADT import stack
+from DISClib.Algorithms.Graphs import scc
 import timeit
 assert config
 
@@ -39,15 +40,126 @@ hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
 
-# ___________________________________________________
-#  Variables
-# ___________________________________________________
-
+servicefile = '201801-1-citibike-tripdata.csv'
+servicefile2= '201801-2-citibike-tripdata.csv'
+servicefile3= '201801-3-citibike-tripdata.csv'
+servicefile4= '201801-4-citibike-tripdata.csv'
+initialStation = None
+recursionLimit = 20000
 
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
 
+
+def printMenu():
+    print("\n")
+    print("****************************************************")
+    print("RETO No. 4 CitiBike")
+    print("[ 1 ] Inicializar Analizador")
+    print("[ 2 ] Cargar información de citibyke en newyork")
+    print("[ 3 ] Cantidad de clusters de viajes")
+    print("[ 4 ] Ruta turistica circular")
+    print("[ 5 ] Estaciones criticas ")
+    print("[ 6 ] Ruta turistisca por resistencia")
+    print("[ 7 ] Recomendador de Rutas")
+    print("[ 8 ] Ruta de interes turistico")
+    print("[ 9 ] Identificacion de estaciones para publicidad")
+    print("[10 ] Identificacion de bicicletas para mantenimiento")
+    print("[ 0 ] Salir")
+    print("****************************************************")
+
+
+def optionTwo():
+    print("\nCargando información ....")
+    controller.loadServices(cont, servicefile4)
+    numedges = controller.totalConnections(cont) #falta implementar esto
+    numvertex = controller.totalStops(cont) #falta implementar esto
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    sys.setrecursionlimit(recursionLimit)
+    print('El limite de recursion se ajusta a: ' + str(recursionLimit))
+
+
+def optionThree():
+    print('Under construction.... ')
+
+def optionFour():
+    print('Under construction.... ')
+
+def optionFive():
+    print('Under construction.... ')
+
+def optionSix():
+    print('Under construction.... ')
+
+def optionSeven():
+    print('Under construction.... ')
+
+def optionEight():
+    print('Under construction.... ')
+
+def optionNine():
+    print('Under construction.... ')
+
+def optionTen():
+    print('Under construction.... ')
+
 """
 Menu principal
 """
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if int(inputs) == 1:
+        print("\nInicializando el controlador...")
+        # cont es el controlador que se usará de acá en adelante
+        citibike = controller.init()
+        cont=citibike
+        print (type(citibike['station']))
+        print (type (citibike['graph']))
+        print ("Se ha creado el Cont.... Clic para continuar")
+
+
+    elif int(inputs) == 2:
+        executiontime = timeit.timeit(optionTwo, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 3:
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 4:
+        executiontime = timeit.timeit(optionFour, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 5:
+        executiontime = timeit.timeit(optionFive, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 6:
+        executiontime = timeit.timeit(optionSix, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 7:
+        executiontime = timeit.timeit(optionSeven, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 8:
+        executiontime = timeit.timeit(optionEight, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs) == 9:
+        executiontime = timeit.timeit(optionNine, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+
+    elif int(inputs) == 10:
+        executiontime = timeit.timeit(optionTen, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    else:
+        sys.exit(0)
+sys.exit(0)
